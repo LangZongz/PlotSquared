@@ -28,13 +28,19 @@ jobs:
             echo "STATUS=release" >> $GITHUB_ENV
           fi
       - name: Publish Release
-        if: ${{ runner.os == 'Linux' && env.STATUS == 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main'}}
-        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "build/libs/*.jar"
+          body: |
+            Commit ${{ steps.short_sha.outputs.sha_short }}
+            This release is automatically compiled by GitHub Actions
+          name: Adyeshach Automation Compile ${{ steps.short_sha.outputs.sha_short }}
+          draft: false
+          tag_name: commit-${{ steps.short_sha.outputs.sha_short }}
+          generate_release_notes: true
         env:
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_KEY }}
+          GITHUB_REPOSITORY: LangZongz/PlotSquared
       - name: Publish Snapshot
         if: ${{ runner.os == 'Linux' && env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: ./gradlew publishToSonatype
