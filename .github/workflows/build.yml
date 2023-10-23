@@ -30,7 +30,7 @@ jobs:
       - name: Publish Release
         uses: softprops/action-gh-release@v1
         with:
-          files: "build/libs/*.jar"
+          files: "Core/build/libs/*.jar"
           body: |
             Commit ${{ steps.short_sha.outputs.sha_short }}
             This release is automatically compiled by GitHub Actions
